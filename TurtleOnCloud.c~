@@ -31,7 +31,6 @@ Vars
     Numeric j;
     Numeric EntryNumber(0);
     Numeric TempEntryNumber;
-	Numeric TempPos(0);
     Numeric MaxSlippage;
     Numeric ContractMargin;
     Numeric OrderSideMultiplier(0);
@@ -269,7 +268,7 @@ Begin
      }
      Break;
     }
-// Delete Order if the order price and last price differ too much
+// Delete Order if the order price and last price differs too much
     If (Abs(Q_Last() - A_OpenOrderPrice(i)) > MaxSlippage)
     {
      DeleteOrderSuccess = A_DeleteOrder(A_OpenOrderContractNo(i));
@@ -282,7 +281,7 @@ Begin
       {
        	SetTBProfileString2File(ParamPath, SymbolType(), "EntryState_"+Text(j), "Deleted");
      	SetTBProfileString2File(ParamPath, SymbolType(), "EntryNumber", Text(j-1));
-		 FileAppend(LogPath, "Clear Entry Item " + text(j)+", Because Order Price and Last Price Differ Too Much." ); 
+		 FileAppend(LogPath, "Clear Entry Item" + text(j) ); 
 		EntryNumber = j-1;
       }
       break;
@@ -310,16 +309,13 @@ Begin
 // 3, Check if there is record with no open order or fills
   for i = 1 to ReEntryLimit
   {
-  	TempPos = TempPos + Value(GetTBProfileString2File(ParamPath, SymbolType(), "EntryQuant_"+Text(i)))
-  	if (TempPos != A_TotalPosition()
-	  	&& GetTBProfileString2File(ParamPath, SymbolType(), "EntryState_" + text(i)) == "SentNotAccepted"
-	  	&& A_GetOpenOrderCount() == 0)
+   If (GetTBProfileString2File(ParamPath, SymbolType(), "EntryState_" + text(i)) == "SentNotAccepted")
+   {
+		if (A_GetOpenOrderCount() == 0)
 		{
-       	SetTBProfileString2File(ParamPath, SymbolType(), "EntryState_"+Text(i), "Deleted");
-     	SetTBProfileString2File(ParamPath, SymbolType(), "EntryNumber", Text(i-1));
-		 FileAppend(LogPath, "Clear Entry Item "+ text(i)+", Because This Order Has Never Been Sent. "  ); 
-		EntryNumber = i-1;
+			
 		}
+   }
   }
   
   for i = 1 to ReEntryLimit
