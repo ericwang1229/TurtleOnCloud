@@ -121,9 +121,9 @@ Begin
   }
 
 // Global Position Risk Control
-  If(SymbolType() == "I")
+  If(SymbolType() == "i")
   {
-    If (Value(GetTBProfileString2File(ParamPath, "Pp", "TotalRisk"))>0)
+    If (Value(GetTBProfileString2File(ParamPath, "pp", "TotalRisk"))>0)
     {
       ClearToGo = False;
       FileAppend(LogPath, 
@@ -131,9 +131,9 @@ Begin
     ", Cannot Entry Because Position On PP") ;
     }
   }
-  Else If(SymbolType() == "Pp")
+  Else If(SymbolType() == "pp")
   {
-    If (Value(GetTBProfileString2File(ParamPath, "I", "TotalRisk"))>0)
+    If (Value(GetTBProfileString2File(ParamPath, "i", "TotalRisk"))>0)
     {
       ClearToGo = False;
       FileAppend(LogPath, 
@@ -141,26 +141,26 @@ Begin
     ", Cannot Entry Because Position On I") ;
     }
   }
-  Else If(SymbolType() == "Y")
+  Else If(SymbolType() == "y")
   {
-    If ((Value(GetTBProfileString2File(ParamPath, "M", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "Rm", "TotalRisk"))>0))
+    If ((Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0)
+	&& (Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On M and Rm") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "M", "TotalRisk"))>0) 
-	&& (Value(GetTBProfileString2File(ParamPath, "Oi", "TotalRisk"))>0))
+    Else If ((Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0) 
+	&& (Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On M and Oi") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "Oi", "TotalRisk"))>0) 
-	&& (Value(GetTBProfileString2File(ParamPath, "Rm", "TotalRisk"))>0))
+    Else If ((Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0) 
+	&& (Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
@@ -168,26 +168,26 @@ Begin
     ", Cannot Entry Because Position On Oi and Rm") ;
     }
   }
-  Else If(SymbolType() == "M")
+  Else If(SymbolType() == "m")
   {
-    If ((Value(GetTBProfileString2File(ParamPath, "Y", "TotalRisk"))>0) 
-	&& (Value(GetTBProfileString2File(ParamPath, "Rm", "TotalRisk"))>0))
+    If ((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0) 
+	&& (Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On Y and Rm") ;
     }
-    Else If((Value(GetTBProfileString2File(ParamPath, "Y", "TotalRisk"))>0)
-	&&(Value(GetTBProfileString2File(ParamPath, "Oi", "TotalRisk"))>0))
+    Else If((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
+	&&(Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On Y and Oi") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "Oi", "TotalRisk"))>0)
-	&&(Value(GetTBProfileString2File(ParamPath, "Rm", "TotalRisk"))>0))
+    Else If ((Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0)
+	&&(Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
@@ -195,26 +195,26 @@ Begin
     ", Cannot Entry Because Position On Oi and Rm") ;
     }
   }
-  Else If(SymbolType() == "Rm")
+  Else If(SymbolType() == "rm")
   {
-    If ((Value(GetTBProfileString2File(ParamPath, "Y", "TotalRisk"))>0)
-	&&(Value(GetTBProfileString2File(ParamPath, "M", "TotalRisk"))>0))
+    If ((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
+	&&(Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On Y and M") ;
     }
-    Else If((Value(GetTBProfileString2File(ParamPath, "Y", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "Oi", "TotalRisk"))>0))
+    Else If((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
+	&& (Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On Y and Oi") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "Oi", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "M", "TotalRisk"))>0))
+    Else If ((Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0)
+	&& (Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
@@ -222,26 +222,26 @@ Begin
     ", Cannot Entry Because Position On Oi and Y") ;
     }
   }
-  Else If(SymbolType() == "Oi")
+  Else If(SymbolType() == "oi")
   {
-    If ((Value(GetTBProfileString2File(ParamPath, "Y", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "M", "TotalRisk"))>0))
+    If ((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
+	&& (Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On Y and M") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "Y", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "Rm", "TotalRisk"))>0))
+    Else If ((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
+	&& (Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
     ", Cannot Entry Because Position On Y and Rm") ;
     }
-    Else If((Value(GetTBProfileString2File(ParamPath, "Rm", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "M", "TotalRisk"))>0))
+    Else If((Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0)
+	&& (Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
@@ -323,15 +323,21 @@ Begin
   for i = 1 to ReEntryLimit
   {
   	TempPos = TempPos + Value(GetTBProfileString2File(ParamPath, SymbolType(), "EntryQuant_"+Text(i)));
-  	if ((TempPos <> A_TotalPosition())
+  	if ( (Abs(TempPos) > Abs(A_TotalPosition()))
 	  	&& (GetTBProfileString2File(ParamPath, SymbolType(), "EntryState_" + text(i)) == "SentNotAccepted")
-	  	&& (A_GetOpenOrderCount() == 0))
+	  	&& (A_GetOpenOrderCount() == 0)
+		&& (Abs(Q_Last() - Value(GetTBProfileString2File(ParamPath, SymbolType(), "EntryPrice_" + text(i)))) > MaxSlippage) )
 		{
        	SetTBProfileString2File(ParamPath, SymbolType(), "EntryState_"+Text(i), "Deleted");
      	SetTBProfileString2File(ParamPath, SymbolType(), "EntryNumber", Text(i-1));
 		 FileAppend(LogPath, "Clear Entry Item "+ text(i)+", Because This Order Has Never Been Sent. "  ); 
 		EntryNumber = i-1;
 		}
+	if (Abs(TempPos) < Abs(A_TotalPosition()))
+	{
+		 FileAppend(LogPath, "Fatal Error: Open Pos is more than send. "  ); 
+		 ClearToGo = False;
+	}
   }
   
   for i = 1 to ReEntryLimit
@@ -510,5 +516,5 @@ Begin
   }
   //End of ClearToGo
  }
-End
+End 
 
