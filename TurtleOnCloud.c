@@ -35,6 +35,8 @@ Vars
     Numeric MaxSlippage;
     Numeric ContractMargin;
     Numeric OrderSideMultiplier(0);
+	Numeric StoplossDay(0);
+	Numeric StoplossMonth(0);
 Begin
     If(BarStatus == 0)
     {
@@ -56,13 +58,20 @@ Begin
     LogPath = FileFolder + "\\TBLog_" + Symbol() + "_" +SymbolName() + "_" + Text(CurrentDate()) + ".csv";
     ParamPath = FileFolder + "\\TurtleSetup.csv";
     FileAppend(LogPath, "========") ;
- 
+ StoplossDay = GetGlobalVar(11);
+ StoplossMonth = GetGlobalVar(12);
  If ( !CanTrade() )
  {
   FileAppend(LogPath, 
    "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
    ", CanNotTrade") ;
  }
+ Else If ( CurrentTime()<0.0901 || CurrentTime()>0.1500)
+{
+  FileAppend(LogPath, 
+   "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
+   ", TimeNotMet") ;
+} 
  Else If ( A_AccountID() == "" || A_AccountID == InvalidString )
  {
   FileAppend(LogPath,
@@ -86,6 +95,12 @@ Begin
   FileAppend(LogPath,
    "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
    ", Q_Last Returns InvalidNumeric");
+ }
+ Else If(StoplossMonth == Month() && StoplossDay == Day())
+ {
+FileAppend(LogPath,
+   "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
+   ", Today has stoped losss, stop trading");
  }
  Else
  {
@@ -253,7 +268,7 @@ Begin
 
 // Position and Order Management
 // 1,Check If there have open orders. Change instrument order state in setup file If have.
-  If (InvalidInteger != A_GetOpenOrderCount() && 0 != A_GetOpenOrderCount())
+/*   If (InvalidInteger != A_GetOpenOrderCount() && 0 != A_GetOpenOrderCount())
   {
    ClearToGo = False;
    for i = 1 to A_GetOpenOrderCount()
@@ -280,9 +295,9 @@ Begin
       SetTBProfileString2File(ParamPath, SymbolType(), "EntryState_"+Text(j), "AcceptedNotFilled");
      }
      Break;
-    }
+    } */
 // Delete Order if the order price and last price differ too much
-    If (Abs(Q_Last() - A_OpenOrderPrice(i)) > MaxSlippage)
+ /*    If (Abs(Q_Last() - A_OpenOrderPrice(i)) > MaxSlippage)
     {
      DeleteOrderSuccess = A_DeleteOrder(A_OpenOrderContractNo(i));
      FileAppend(LogPath, "DeleteOpenOrder" + text(i) +
@@ -299,12 +314,12 @@ Begin
       }
       break;
      }
-    }
+    } */
 // End of "Delete Order"
-   } 
-  }
+ /*   } 
+  } */
 // 2, Check If there are completed orders.
-  If (InvalidInteger != A_GetOrderCount() && A_GetOrderCount()>0)
+/*   If (InvalidInteger != A_GetOrderCount() && A_GetOrderCount()>0)
   {
    for i = 1 to A_GetOrderCount()
    {
@@ -318,9 +333,9 @@ Begin
     Break;
     }
    }
-  }
+  } */
 // 3, Check if there is record with no open order or fills
-  for i = 1 to ReEntryLimit
+/*   for i = 1 to ReEntryLimit
   {
   	TempPos = TempPos + Value(GetTBProfileString2File(ParamPath, SymbolType(), "EntryQuant_"+Text(i)));
   	if ( (Abs(TempPos) > Abs(A_TotalPosition()))
@@ -342,12 +357,12 @@ Begin
   
   for i = 1 to ReEntryLimit
   {
-   If (GetTBProfileString2File(ParamPath, SymbolType(), "EntryState_" + text(i)) == "SentNotAccepted")
-   {
-    ClearToGo = False;
-    Break;
-   }
-  }
+   // If (GetTBProfileString2File(ParamPath, SymbolType(), "EntryState_" + text(i)) == "SentNotAccepted")
+   // {
+    // ClearToGo = False;
+    // Break;
+   // }
+  } */
    
   FileAppend(LogPath, 
    "DateTime = " + Text(CurrentDate() + CurrentTime()) +
@@ -379,7 +394,8 @@ Begin
   If (ClearToGo)
   {
     //First Buy
-   If ( EntryNumber == 0 && ( (PreBreakOutFailure && High > DonchianHi) || (High > fsDonchianHi) ) && TurtleUnits >= 1 )
+   //If ( EntryNumber == 0 && ( (PreBreakOutFailure && Q_Last() > DonchianHi) || (Q_Last() > fsDonchianHi) ) && TurtleUnits >= 1 )
+   If ( EntryNumber == 0 &&  (Q_Last() > fsDonchianHi)  && TurtleUnits >= 1 )
    {
     OrderPrice = Q_AskPrice();
     EntryNumber = 1;
@@ -389,7 +405,8 @@ Begin
     A_SendOrder(Enum_Buy, Enum_Entry, OrderQuantity, OrderPrice); 
    }
    //First Sell
-   Else If ( EntryNumber == 0 && ((PreBreakOutFailure && Low < DonchianLo)||(Low < fsDonchianLo))&& TurtleUnits >= 1 )
+   //Else If ( EntryNumber == 0 && ((PreBreakOutFailure && Q_Last() < DonchianLo)||(Q_Last() < fsDonchianLo))&& TurtleUnits >= 1 )
+   Else If ( EntryNumber == 0 && (Q_Last() < fsDonchianLo) && TurtleUnits >= 1 )
    {
     OrderPrice = Q_BidPrice();
     EntryNumber = 1;
@@ -407,6 +424,8 @@ Begin
     OrderSideMultiplier = -1;
     OrderQuantity = Abs(A_TotalPosition());
     A_SendOrder(Enum_Sell, Enum_Exit, OrderQuantity, OrderPrice);
+	SetGlobalVar(11, Day());
+	SetGlobalVar(12, Month());
    }
 // To Close Long Position
    Else If ( A_TotalPosition() > 0 && Q_Last() < ExitLowestPrice  && EntryNumber > 0 )
@@ -440,6 +459,8 @@ Begin
     OrderSideMultiplier = 1;
     OrderQuantity = Abs(A_TotalPosition());
     A_SendOrder(Enum_Buy, Enum_Exit, OrderQuantity, OrderPrice);
+	SetGlobalVar(11, Day());
+	SetGlobalVar(12, Month());
    }
 // To Close Short Position
    Else If ( A_TotalPosition() < 0 && Q_Last() > ExitHighestPrice && EntryNumber > 0 )
