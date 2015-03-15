@@ -57,6 +57,7 @@ Begin
  
     LogPath = FileFolder + "\\TBLog_" + Symbol() + "_" +SymbolName() + "_" + Text(CurrentDate()) + ".csv";
     ParamPath = FileFolder + "\\TurtleSetup.csv";
+    OrderLogPath = FileFolder + "\\Orders.csv";
     FileAppend(LogPath, "========") ;
  StoplossDay = GetGlobalVar(11);
  StoplossMonth = GetGlobalVar(12);
@@ -507,6 +508,12 @@ FileAppend(LogPath,
        ", OrderPrice = " + Text(OrderPrice) +
        ", Quantity = " + Text(OrderSideMultiplier * OrderQuantity) +
        ", EntryTimes = " + Text(EntryNumber)); 
+       FileAppend(OrderLogPath, "BuyEntry" +
+   	", DateTime = " + Text(CurrentDate() + CurrentTime()) +
+       ", Instrument = " + SymbolName() + 
+       ", OrderPrice = " + Text(OrderPrice) +
+       ", Quantity = " + Text(OrderSideMultiplier * OrderQuantity) +
+       ", EntryTimes = " + Text(EntryNumber));
      }
      Else If (OrderSideMultiplier == -1)
      {
@@ -515,6 +522,12 @@ FileAppend(LogPath,
        ", OrderPrice = " + Text(OrderPrice) +
        ", Quantity = " + Text(OrderSideMultiplier * OrderQuantity) +
        ", EntryTimes = " + Text(EntryNumber)); 
+       FileAppend(OrderLogPath, "SellEntry" +
+   	", DateTime = " + Text(CurrentDate() + CurrentTime()) +
+       ", Instrument = " + SymbolName() + 
+       ", OrderPrice = " + Text(OrderPrice) +
+       ", Quantity = " + Text(OrderSideMultiplier * OrderQuantity) +
+       ", EntryTimes = " + Text(EntryNumber));
      }
      SetTBProfileString2File(ParamPath, SymbolType(), "PreEntryPrice", text(OrderPrice));
     }
@@ -523,6 +536,12 @@ FileAppend(LogPath,
      Alert("ClosePos " + SymbolName() + " " + Text(OrderQuantity)+" @ "+Text(OrderPrice)+", EntryTime = "+Text(EntryTime));
      FileAppend(LogPath, "ClosePos" +
       ", OrderPrice = " + Text(OrderPrice));
+       FileAppend(OrderLogPath, "ClosePos" +
+   	", DateTime = " + Text(CurrentDate() + CurrentTime()) +
+       ", Instrument = " + SymbolName() + 
+       ", OrderPrice = " + Text(OrderPrice) +
+       ", Quantity = " + Text(OrderSideMultiplier * OrderQuantity) +
+       ", EntryTimes = " + Text(EntryNumber));
     }
     SetTBProfileString2File(ParamPath, SymbolType(), "EntryQuant_"+Text(EntryNumber), Text(OrderSideMultiplier * OrderQuantity));
     SetTBProfileString2File(ParamPath, SymbolType(), "EntryPrice_"+Text(EntryNumber), Text(OrderPrice));
