@@ -1,5 +1,5 @@
 Params
-    Numeric RiskRatio(1);                   
+    Numeric RiskRatio(0.5);                   
     Numeric ATRLength(20);                  
     Numeric boLength(20);                   
     Numeric fsLength(55);                   
@@ -66,7 +66,7 @@ Begin
    "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
    ", CanNotTrade") ;
  }
- Else If ( CurrentTime()<0.0901 || CurrentTime()>0.1500)
+ Else If ( CurrentTime()<0.0901 && CurrentTime()>0.0859)
 {
   FileAppend(LogPath, 
    "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
@@ -123,6 +123,10 @@ FileAppend(LogPath,
   SetTBProfileString2File(ParamPath, SymbolType(), "TotalRisk", Text(Abs(A_TotalPosition()*N*ContractUnit()*BigPointValue())/A_CurrentEquity()));
   
   TurtleUnits = (A_CurrentEquity() * RiskRatio /100) /(N * ContractUnit() * BigPointValue());
+  if (TurtleUnits > 0.8 && TurtleUnits<1)
+  {
+	TurtleUnits = 1;
+  }
   TurtleUnits = IntPart(TurtleUnits); 
   ContractMargin = ContractUnit() * Close * MarginRatio();
   If (A_FreeMargin() < ContractMargin * TurtleUnits)
@@ -167,20 +171,20 @@ FileAppend(LogPath,
     ", Cannot Entry Because Position On M and Rm") ;
     }
     Else If ((Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0) 
-	&& (Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0))
+	&& (Value(GetTBProfileString2File(ParamPath, "p", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
-    ", Cannot Entry Because Position On M and Oi") ;
+    ", Cannot Entry Because Position On M and p") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0) 
+    Else If ((Value(GetTBProfileString2File(ParamPath, "p", "TotalRisk"))>0) 
 	&& (Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
-    ", Cannot Entry Because Position On Oi and Rm") ;
+    ", Cannot Entry Because Position On p and Rm") ;
     }
   }
   Else If(SymbolType() == "m")
@@ -194,20 +198,20 @@ FileAppend(LogPath,
     ", Cannot Entry Because Position On Y and Rm") ;
     }
     Else If((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
-	&&(Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0))
+	&&(Value(GetTBProfileString2File(ParamPath, "p", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
-    ", Cannot Entry Because Position On Y and Oi") ;
+    ", Cannot Entry Because Position On Y and p") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0)
+    Else If ((Value(GetTBProfileString2File(ParamPath, "p", "TotalRisk"))>0)
 	&&(Value(GetTBProfileString2File(ParamPath, "rm", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
-    ", Cannot Entry Because Position On Oi and Rm") ;
+    ", Cannot Entry Because Position On P and Rm") ;
     }
   }
   Else If(SymbolType() == "rm")
@@ -221,23 +225,23 @@ FileAppend(LogPath,
     ", Cannot Entry Because Position On Y and M") ;
     }
     Else If((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
-	&& (Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0))
+	&& (Value(GetTBProfileString2File(ParamPath, "p", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
-    ", Cannot Entry Because Position On Y and Oi") ;
+    ", Cannot Entry Because Position On Y and P") ;
     }
-    Else If ((Value(GetTBProfileString2File(ParamPath, "oi", "TotalRisk"))>0)
+    Else If ((Value(GetTBProfileString2File(ParamPath, "p", "TotalRisk"))>0)
 	&& (Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0))
     {
       ClearToGo = False;
       FileAppend(LogPath, 
     "DateTime = " + Text(CurrentDate() + CurrentTime()) + 
-    ", Cannot Entry Because Position On Oi and Y") ;
+    ", Cannot Entry Because Position On P and Y") ;
     }
   }
-  Else If(SymbolType() == "oi")
+  Else If(SymbolType() == "p")
   {
     If ((Value(GetTBProfileString2File(ParamPath, "y", "TotalRisk"))>0)
 	&& (Value(GetTBProfileString2File(ParamPath, "m", "TotalRisk"))>0))
@@ -388,14 +392,15 @@ FileAppend(LogPath,
    ", EntryNumber = " + Text(EntryNumber) +
    ", PreEntryPrice = " + Text(PreEntryPrice) +
    ", ContractMargin = " + Text(ContractMargin) +
+   ", FreeMargin = "+Text(A_FreeMargin())+
    ", PreBreakoutFailure = " + IIfString(PreBreakoutFailure, "True", "False") +
    ", ClearToGo = " + IIfString(ClearToGo, "True", "False"));
    
   If (ClearToGo)
   {
     //First Buy
-   //If ( EntryNumber == 0 && ( (PreBreakOutFailure && Q_Last() > DonchianHi) || (Q_Last() > fsDonchianHi) ) && TurtleUnits >= 1 )
-   If ( EntryNumber == 0 &&  (Q_Last() > fsDonchianHi)  && TurtleUnits >= 1 )
+   If ( EntryNumber == 0 && ( (PreBreakOutFailure && Q_Last() > DonchianHi) || (Q_Last() > fsDonchianHi) ) && TurtleUnits >= 1 )
+   //If ( EntryNumber == 0 &&  (Q_Last() > fsDonchianHi)  && TurtleUnits >= 1 )
    {
     OrderPrice = Q_AskPrice();
     EntryNumber = 1;
@@ -405,8 +410,8 @@ FileAppend(LogPath,
     A_SendOrder(Enum_Buy, Enum_Entry, OrderQuantity, OrderPrice); 
    }
    //First Sell
-   //Else If ( EntryNumber == 0 && ((PreBreakOutFailure && Q_Last() < DonchianLo)||(Q_Last() < fsDonchianLo))&& TurtleUnits >= 1 )
-   Else If ( EntryNumber == 0 && (Q_Last() < fsDonchianLo) && TurtleUnits >= 1 )
+   Else If ( EntryNumber == 0 && ((PreBreakOutFailure && Q_Last() < DonchianLo)||(Q_Last() < fsDonchianLo))&& TurtleUnits >= 1 )
+   //Else If ( EntryNumber == 0 && (Q_Last() < fsDonchianLo) && TurtleUnits >= 1 )
    {
     OrderPrice = Q_BidPrice();
     EntryNumber = 1;
